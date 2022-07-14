@@ -230,36 +230,12 @@ export class TokenStream {
 
     if (valid) {
       resetPos = pos;
-    }
-
-    if (c === 'e' || c === 'E') {
-      pos++;
-      let acceptSign = true;
-      let validExponent = false;
-      while (pos < this.expression.length) {
-        c = this.expression.charAt(pos);
-        if (acceptSign && (c === '+' || c === '-')) {
-          acceptSign = false;
-        } else if (c >= '0' && c <= '9') {
-          validExponent = true;
-          acceptSign = false;
-        } else {
-          break;
-        }
-        pos++;
-      }
-
-      if (!validExponent) {
-        pos = resetPos;
-      }
-    }
-
-    if (valid) {
       this.current = this.newToken(TNUMBER, parseFloat(this.expression.substring(startPos, pos)));
       this.pos = pos;
     } else {
       this.pos = resetPos;
     }
+    
     return valid;
   }
   isOperator() {
