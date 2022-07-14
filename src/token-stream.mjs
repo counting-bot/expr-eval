@@ -42,16 +42,16 @@ export class TokenStream {
     }
   }
   isString() {
-    var r = false;
-    var startPos = this.pos;
-    var quote = this.expression.charAt(startPos);
+    let r = false;
+    const startPos = this.pos;
+    const quote = this.expression.charAt(startPos);
 
     if (quote === '\'' || quote === '"') {
-      var index = this.expression.indexOf(quote, startPos + 1);
+      let index = this.expression.indexOf(quote, startPos + 1);
       while (index >= 0 && this.pos < this.expression.length) {
         this.pos = index + 1;
         if (this.expression.charAt(index - 1) !== '\\') {
-          var rawString = this.expression.substring(startPos + 1, index);
+          const rawString = this.expression.substring(startPos + 1, index);
           this.current = this.newToken(TSTRING, this.unescape(rawString), startPos);
           r = true;
           break;
@@ -80,11 +80,11 @@ export class TokenStream {
     return false;
   }
   isName() {
-    var startPos = this.pos;
-    var i = startPos;
-    var hasLetter = false;
+    const startPos = this.pos;
+    let i = startPos;
+    let hasLetter = false;
     for (; i < this.expression.length; i++) {
-      var c = this.expression.charAt(i);
+      const c = this.expression.charAt(i);
       if (c.toUpperCase() === c.toLowerCase()) {
         if (i === this.pos && (c === '$' || c === '_')) {
           if (c === '_') {
@@ -99,7 +99,7 @@ export class TokenStream {
       }
     }
     if (hasLetter) {
-      var str = this.expression.substring(startPos, i);
+      const str = this.expression.substring(startPos, i);
       this.current = this.newToken(TNAME, str);
       this.pos += str.length;
       return true;
@@ -107,14 +107,14 @@ export class TokenStream {
     return false;
   }
   unescape(v) {
-    var index = v.indexOf('\\');
+    let index = v.indexOf('\\');
     if (index < 0) {
       return v;
     }
 
-    var buffer = v.substring(0, index);
+    let buffer = v.substring(0, index);
     while (index >= 0) {
-      var c = v.charAt(++index);
+      const c = v.charAt(++index);
       switch (c) {
         case '\'':
           buffer += '\'';
@@ -145,7 +145,7 @@ export class TokenStream {
           break;
         case 'u':
           // interpret the following 4 characters as the hex of the unicode code point
-          var codePoint = v.substring(index + 1, index + 5);
+          const codePoint = v.substring(index + 1, index + 5);
           if (!codePointPattern.test(codePoint)) {
             this.parseError('Illegal escape sequence: \\u' + codePoint);
           }
@@ -156,7 +156,7 @@ export class TokenStream {
           throw this.parseError('Illegal escape sequence: "\\' + c + '"');
       }
       ++index;
-      var backslash = v.indexOf('\\', index);
+      const backslash = v.indexOf('\\', index);
       buffer += v.substring(index, backslash < 0 ? v.length : backslash);
       index = backslash;
     }
@@ -164,15 +164,15 @@ export class TokenStream {
     return buffer;
   }
   isRadixInteger() {
-    var pos = this.pos;
+    let pos = this.pos;
 
     if (pos >= this.expression.length - 2 || this.expression.charAt(pos) !== '0') {
       return false;
     }
     ++pos;
 
-    var radix;
-    var validDigit;
+    let radix;
+    let validDigit;
     if (this.expression.charAt(pos) === 'x') {
       radix = 16;
       validDigit = /^[0-9a-f]$/i;
@@ -185,11 +185,11 @@ export class TokenStream {
       return false;
     }
 
-    var valid = false;
-    var startPos = pos;
+    let valid = false;
+    const startPos = pos;
 
     while (pos < this.expression.length) {
-      var c = this.expression.charAt(pos);
+      const c = this.expression.charAt(pos);
       if (validDigit.test(c)) {
         pos++;
         valid = true;
@@ -205,13 +205,13 @@ export class TokenStream {
     return valid;
   }
   isNumber() {
-    var valid = false;
-    var pos = this.pos;
-    var startPos = pos;
-    var resetPos = pos;
-    var foundDot = false;
-    var foundDigits = false;
-    var c;
+    let valid = false;
+    let pos = this.pos;
+    const startPos = pos;
+    let resetPos = pos;
+    let foundDot = false;
+    let foundDigits = false;
+    let c;
 
     while (pos < this.expression.length) {
       c = this.expression.charAt(pos);
