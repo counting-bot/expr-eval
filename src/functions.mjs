@@ -18,6 +18,10 @@ export function mod(a, b) {
   return a % b;
 }
 
+export function power(a, b) {
+  return a ** b;
+}
+
 export function neg(a) {
   return -a;
 }

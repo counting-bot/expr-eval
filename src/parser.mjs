@@ -2,7 +2,7 @@ import { TEOF } from './token.mjs';
 import { TokenStream } from './token-stream.mjs';
 import { ParserState } from './parser-state.mjs';
 import { Expression } from './expression.mjs';
-import { add, sub, mul, div, mod, neg } from './functions.mjs';
+import { add, sub, mul, div, mod, neg, power } from './functions.mjs';
 
 export class Parser {
   constructor() {
@@ -19,6 +19,7 @@ export class Parser {
       '*': mul,
       '/': div,
       '%': mod,
+      '^': power,
     };
 
     this.functions = {
