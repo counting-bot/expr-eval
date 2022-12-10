@@ -1,5 +1,4 @@
-import { TOP, TNUMBER, TSTRING, TPAREN, TCOMMA, TNAME, TSEMICOLON, TEOF } from './token.mjs';
-import { Instruction, INUMBER, IVAR, IFUNCALL } from './instruction.mjs';
+import { Instruction } from './instruction.mjs';
 import { unaryOps } from './functions.mjs';
 
 const ADD_SUB_OPERATORS = ['+', '-'];
@@ -56,27 +55,26 @@ export class ParserState {
     }
   }
   parseAtom(instr) {
-    // const unaryOps = this.parser.unaryOps;
     function isPrefixOperator(token) {
       return token.value in unaryOps;
     }
 
-    if (this.accept(TNAME) || this.accept(TOP, isPrefixOperator)) {
-      instr.push(new Instruction(IVAR, this.current.value));
-    } else if (this.accept(TNUMBER)) {
-      instr.push(new Instruction(INUMBER, this.current.value));
-    } else if (this.accept(TSTRING)) {
-      instr.push(new Instruction(INUMBER, this.current.value));
-    } else if (this.accept(TPAREN, '(')) {
+    if (this.accept("TNAME") || this.accept("TOP", isPrefixOperator)) {
+      instr.push(new Instruction("IVAR", this.current.value));
+    } else if (this.accept("TNUMBER")) {
+      instr.push(new Instruction("INUMBER", this.current.value));
+    } else if (this.accept("TSTRING")) {
+      instr.push(new Instruction("INUMBER", this.current.value));
+    } else if (this.accept("TPAREN", '(')) {
       this.parseAddSub(instr);
-      this.expect(TPAREN, ')');
+      this.expect("TPAREN", ')');
     } else {
       this.reject(this.tokens.expression);
     }
   }
   parseAddSub(instr) {
     this.parseTerm(instr);
-    while (this.accept(TOP, ADD_SUB_OPERATORS)) {
+    while (this.accept("TOP", ADD_SUB_OPERATORS)) {
       const op = this.current;
       this.parseTerm(instr);
       instr.push(new Instruction("IOP2", op.value));
@@ -84,26 +82,25 @@ export class ParserState {
   }
   parseTerm(instr) {
     this.parseFactor(instr);
-    while (this.accept(TOP, TERM_OPERATORS)) {
+    while (this.accept("TOP", TERM_OPERATORS)) {
       const op = this.current;
       this.parseFactor(instr);
       instr.push(new Instruction("IOP2", op.value));
     }
   }
   parseFactor(instr) {
-    // const unaryOps = this.parser.unaryOps;
     function isPrefixOperator(token) {
       return token.value in unaryOps;
     }
 
     this.save();
-    if (this.accept(TOP, isPrefixOperator)) {
+    if (this.accept("TOP", isPrefixOperator)) {
       if (this.current.value !== '-' && this.current.value !== '+') {
-        if (this.nextToken.type === TPAREN && this.nextToken.value === '(') {
+        if (this.nextToken.type === "TPAREN" && this.nextToken.value === '(') {
           this.restore();
           this.parseExponential(instr);
           return;
-        } else if (this.nextToken.type === TSEMICOLON || this.nextToken.type === TCOMMA || this.nextToken.type === TEOF || (this.nextToken.type === TPAREN && this.nextToken.value === ')')) {
+        } else if (this.nextToken.type === "TSEMICOLON" || this.nextToken.type === "TCOMMA" || this.nextToken.type === "TEOF" || (this.nextToken.type === "TPAREN" && this.nextToken.value === ')')) {
           this.restore();
           this.parseAtom(instr);
           return;
@@ -119,29 +116,28 @@ export class ParserState {
   }
   parseExponential(instr) {
     this.parseFunctionCall(instr);
-    while (this.accept(TOP, '^')) {
+    while (this.accept("TOP", '^')) {
       this.parseFactor(instr);
       instr.push(new Instruction("IOP2", "^"));
     }
   }
   parseFunctionCall(instr) {
-    // const unaryOps = this.parser.unaryOps;
     function isPrefixOperator(token) {
       return token.value in unaryOps;
     }
 
-    if (this.accept(TOP, isPrefixOperator)) {
+    if (this.accept("TOP", isPrefixOperator)) {
       const op = this.current;
       this.parseAtom(instr);
       instr.push(new Instruction("IOP1", op.value));
     } else {
       this.parseAtom(instr)
-      while (this.accept(TPAREN, '(')) {
-        if (this.accept(TPAREN, ')')) {
-          instr.push(new Instruction(IFUNCALL, 0));
+      while (this.accept("TPAREN", '(')) {
+        if (this.accept("TPAREN", ')')) {
+          instr.push(new Instruction("IFUNCALL", 0));
         } else {
           const argCount = this.parseArgumentList(instr);
-          instr.push(new Instruction(IFUNCALL, argCount));
+          instr.push(new Instruction("IFUNCALL", argCount));
         }
       }
     }
@@ -149,10 +145,10 @@ export class ParserState {
   parseArgumentList(instr) {
     let argCount = 0;
 
-    while (!this.accept(TPAREN, ')')) {
+    while (!this.accept("TPAREN", ')')) {
       this.parseAddSub(instr);
       ++argCount;
-      while (this.accept(TCOMMA)) {
+      while (this.accept("TCOMMA")) {
         this.parseAddSub(instr);
         ++argCount;
       }

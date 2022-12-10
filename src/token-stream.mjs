@@ -1,4 +1,4 @@
-import { Token, TEOF, TOP, TNUMBER, TPAREN, TCOMMA, TNAME } from './token.mjs';
+import { Token } from './token.mjs';
 
 export class TokenStream {
   constructor(expression, reject) {
@@ -22,7 +22,7 @@ export class TokenStream {
   }
   next() {
     if (this.pos >= this.expression.length) {
-      return this.newToken(TEOF, 'EOF');
+      return this.newToken("TEOF", 'EOF');
     }
 
     if (this.isRadixInteger() ||
@@ -45,7 +45,7 @@ export class TokenStream {
   isParen() {
     const c = this.expression.charAt(this.pos);
     if (c === '(' || c === ')') {
-      this.current = this.newToken(TPAREN, c);
+      this.current = this.newToken("TPAREN", c);
       this.pos++;
       return true;
     }
@@ -54,7 +54,7 @@ export class TokenStream {
   isComma() {
     const c = this.expression.charAt(this.pos);
     if (c === ',') {
-      this.current = this.newToken(TCOMMA, ',');
+      this.current = this.newToken("TCOMMA", ',');
       this.pos++;
       return true;
     }
@@ -81,7 +81,7 @@ export class TokenStream {
     }
     if (hasLetter) {
       const str = this.expression.substring(startPos, i);
-      this.current = this.newToken(TNAME, str);
+      this.current = this.newToken("TNAME", str);
       this.pos += str.length;
       return true;
     }
@@ -123,7 +123,7 @@ export class TokenStream {
     }
 
     if (valid) {
-      this.current = this.newToken(TNUMBER, parseInt(this.expression.substring(startPos, pos), radix));
+      this.current = this.newToken("TNUMBER", parseInt(this.expression.substring(startPos, pos), radix));
       this.pos = pos;
     }
     return valid;
@@ -154,7 +154,7 @@ export class TokenStream {
 
     if (valid) {
       resetPos = pos;
-      this.current = this.newToken(TNUMBER, parseFloat(this.expression.substring(startPos, pos)));
+      this.current = this.newToken("TNUMBER", parseFloat(this.expression.substring(startPos, pos)));
       this.pos = pos;
     } else {
       this.pos = resetPos;
@@ -166,9 +166,9 @@ export class TokenStream {
     const c = this.expression.charAt(this.pos);
 
     if (c === '+' || c === '-' || c === '*' || c === '/' || c === '%' || c === '^' || c === '.') {
-      this.current = this.newToken(TOP, c);
+      this.current = this.newToken("TOP", c);
     } else if (c === '∙' || c === '•') {
-      this.current = this.newToken(TOP, '*');
+      this.current = this.newToken("TOP", '*');
     } else {
       return false;
     }

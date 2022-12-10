@@ -1,8 +1,7 @@
-import { INUMBER, IOP1, IOP2, IVAR, IFUNCALL, IEXPREVAL } from './instruction.mjs';
 import { unaryOps, binaryOps } from './functions.mjs';
 
 export default function evaluate(tokens, expr, resolve, reject) {
-  if (tokens && tokens.type === IEXPREVAL) {
+  if (tokens && tokens.type === "IEXPREVAL") {
     return tokens;
   }
   
@@ -16,16 +15,16 @@ export default function evaluate(tokens, expr, resolve, reject) {
     const item = tokens[i];
 
     switch (item.type){
-      case INUMBER:
+      case "INUMBER":
         nstack.push(item.value);
       break;
-      case IOP2:
+      case "IOP2":
         n2 = nstack.pop();
         n1 = nstack.pop();
         f = binaryOps[item.value];
         nstack.push(f(n1, n2));
       break;
-      case IVAR:
+      case "IVAR":
         if (/^__proto__|prototype|constructor$/.test(item.value)) {
           reject(expr);
         }
@@ -36,12 +35,12 @@ export default function evaluate(tokens, expr, resolve, reject) {
           reject(expr);
         }
       break;
-      case IOP1:
+      case "IOP1":
         n1 = nstack.pop();
         f = unaryOps[item.value];
         nstack.push(f(n1));
       break;
-      case IFUNCALL:
+      case "IFUNCALL":
         argCount = item.value;
         args = [];
         while (argCount-- > 0) {
