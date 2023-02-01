@@ -3,8 +3,9 @@ import { ParserState } from './parser-state.mjs';
 import evaluateFile from './evaluate.mjs';
 
 export const evaluate = expr => {
-
   return new Promise((resolve, reject) => {
+    if (!isNaN(expr)) return resolve(expr);
+    
     const tokenStream = new TokenStream(expr, reject)
     const parserState = new ParserState(tokenStream, reject);
   
