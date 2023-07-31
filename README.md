@@ -1,3 +1,5 @@
+# **Replaced by [counting-bot/expr-eval](https://github.com/counting-bot/math-expression)**
+
 JavaScript Expression Evaluator
 ===============================
 
